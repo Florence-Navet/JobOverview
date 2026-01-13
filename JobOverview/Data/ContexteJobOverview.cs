@@ -1,6 +1,6 @@
-﻿using JobOverview_v35.Entities;
+﻿using JobOverview.Entities;
 using Microsoft.EntityFrameworkCore;
-using Version = JobOverview_v35.Entities.Version;
+using Version = JobOverview.Entities.Version;
 
 namespace JobOverview.Data
 {

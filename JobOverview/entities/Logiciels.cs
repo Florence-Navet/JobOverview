@@ -1,6 +1,6 @@
 ﻿
 
-    namespace JobOverview_v35.Entities
+    namespace JobOverview.Entities
     {
         public class Filiere
         {
@@ -29,7 +29,7 @@
         {
             public float Numero { get; set; }
             public string CodeLogiciel { get; set; } = "";
-            public short Millesime { get; set; }
+            public int Millesime { get; set; }
             public DateTime DateOuverture { get; set; }
             public DateTime DateSortiePrevue { get; set; }
             public DateTime? DateSortieReelle { get; set; }
