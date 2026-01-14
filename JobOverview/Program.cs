@@ -1,5 +1,6 @@
 
 using JobOverview.Data;
+using JobOverview.Data.Migrations;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobOverview
