@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Version = JobOverview.Entities.Version;
 
 namespace JobOverview.Controllers
 {
@@ -24,9 +25,10 @@ namespace JobOverview.Controllers
 
       // GET: api/Logiciels
       [HttpGet]
-      public async Task<ActionResult<IEnumerable<Logiciel>>> GetLogiciels()
+      public async Task<ActionResult<IEnumerable<Logiciel>>> GetLogiciels([FromQuery] string codeFiliere)
       {
-         return await _serviceLog.ObtenirLogiciels();
+         var logiciels = await _serviceLog.ObtenirLogiciels(codeFiliere);
+         return Ok(logiciels);
       }
 
       // GET: api/Logiciels/ABC
@@ -43,5 +45,16 @@ namespace JobOverview.Controllers
          return logiciel;
       }
 
+
+      //GET : Logiciels/GENOMICA/versions?millesime=2018
+      [HttpGet("{codeLogiciel}/versions")]
+      public async Task<ActionResult<IEnumerable<Version>>> GetVersions(String codeLogiciel, [FromQuery] int? millesime)
+      {
+         var versions = await _serviceLog.ObtenirVersionsLogiciel(codeLogiciel, millesime);
+
+         if (versions == null) return NotFound();
+
+         return Ok(versions);
+      }
    }
 }
