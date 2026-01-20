@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Version = JobOverview.Entities.Version;
 
-namespace JobOverview.Data.Migrations
+namespace JobOverview.Data
 {
     public class ContexteJobOverview : DbContext
     {

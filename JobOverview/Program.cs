@@ -1,6 +1,7 @@
 
 using JobOverview.Data;
-using JobOverview.Data.Migrations;
+using JobOverview.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobOverview
@@ -15,21 +16,29 @@ namespace JobOverview
             string? connect = builder.Configuration.GetConnectionString("JobOverviewConnect");
 
             // Add services to the container.
-            builder.Services.AddDbContext<ContexteJobOverview>(opt => opt.UseSqlServer(connect));
+      
+
+         builder.Services.AddDbContext<ContexteJobOverview>(opt 
+            => opt.UseSqlServer(connect));
+
+         builder.Services.AddScoped<IServiceLogiciels, ServiceLogiciels>();
 
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-            var app = builder.Build();
+         builder.Services.AddEndpointsApiExplorer();
+         builder.Services.AddSwaggerGen();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.MapOpenApi();
-            }
+         var app = builder.Build();
 
-            app.UseHttpsRedirection();
+         // Configure the HTTP request pipeline.
+         if (app.Environment.IsDevelopment())
+         {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+         }
+
+         app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
