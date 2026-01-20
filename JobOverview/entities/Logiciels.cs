@@ -1,11 +1,17 @@
 ﻿
 
-    namespace JobOverview.Entities
+using JobOverview.entities;
+
+namespace JobOverview.Entities
     {
         public class Filiere
         {
             public string Code { get; set; } = "";
             public string Nom { get; set; } = "";
+
+      // prop de navigation
+         public virtual List<Equipe> Equipes { get; set; } = new();
+
         }
 
         public class Logiciel

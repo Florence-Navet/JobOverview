@@ -1,112 +1,171 @@
-﻿using JobOverview.Entities;
+﻿using JobOverview.entities;
+using JobOverview.Entities;
 using Microsoft.EntityFrameworkCore;
 using Version = JobOverview.Entities.Version;
 
-namespace JobOverview.Data
+namespace JobOverview
 {
-    public class JeuDonnées
-    {
-        /* Crée un jeu de données pour la partie Logiciels */
-        public static void Créer(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Filiere>().HasData(
-                 new Filiere { Code = "BIOV", Nom = "Biologie végétale" },
-                 new Filiere { Code = "BIOH", Nom = "Biologie humaine" },
-                 new Filiere { Code = "BIOA", Nom = "Support animale" }
-                 );
+   public class ContexteJobOverview : DbContext
+   {
+      public ContexteJobOverview(DbContextOptions options) : base(options)
+      {
+      }
 
-            modelBuilder.Entity<Logiciel>().HasData(
-                 new Logiciel { CodeFiliere = "BIOH", Code = "GENOMICA", Nom = "Genomica" },
-                 new Logiciel { CodeFiliere = "BIOH", Code = "ANATOMIA", Nom = "Anatomia" }
-                 );
+      public virtual DbSet<Filiere> Filieres { get; set; }
+      public virtual DbSet<Logiciel> Logiciels { get; set; }
+      public virtual DbSet<Module> Modules { get; set; }
+      public virtual DbSet<Version> Versions { get; set; }
+      public virtual DbSet<Release> Releases { get; set; }
 
-            modelBuilder.Entity<Module>().HasData(
-                 new Module
-                 {
-                     CodeLogiciel = "GENOMICA",
-                     Code = "SEQUENCAGE",
-                     Nom = "Séquençage"
-                 },
-                 new Module
-                 {
-                     CodeLogiciel = "GENOMICA",
-                     Code = "MARQUAGE",
-                     Nom = "Marquage",
-                     CodeLogicielParent = "GENOMICA",
-                     CodeModuleParent = "SEQUENCAGE"
-                 },
-                 new Module
-                 {
-                     CodeLogiciel = "GENOMICA",
-                     Code = "SEPARATION",
-                     Nom = "Séparation",
-                     CodeLogicielParent = "GENOMICA",
-                     CodeModuleParent = "SEQUENCAGE"
-                 },
-                 new Module
-                 {
-                     CodeLogiciel = "GENOMICA",
-                     Code = "ANALYSE",
-                     Nom = "Analyse",
-                     CodeLogicielParent = "GENOMICA",
-                     CodeModuleParent = "SEQUENCAGE"
-                 },
-                 new Module { CodeLogiciel = "GENOMICA", Code = "POLYMORPHISME", Nom = "Polymorphisme génétique" },
-                 new Module { CodeLogiciel = "GENOMICA", Code = "VAR_ALLELE", Nom = "Variations alléliques" },
-                 new Module { CodeLogiciel = "GENOMICA", Code = "UTILS_ROLES", Nom = "Utilisateurs et rôles" },
-                 new Module { CodeLogiciel = "GENOMICA", Code = "PARAMETRES", Nom = "Paramètres" },
-                 new Module { CodeLogiciel = "ANATOMIA", Code = "MICRO", Nom = "Anatomie microscopique" },
-                 new Module { CodeLogiciel = "ANATOMIA", Code = "PATHO", Nom = "Anatomie pathologique" },
-                 new Module { CodeLogiciel = "ANATOMIA", Code = "FONC", Nom = "Anatomie fonctionnelle" },
-                 new Module { CodeLogiciel = "ANATOMIA", Code = "RADIO", Nom = "Anatomie radiologique" },
-                 new Module { CodeLogiciel = "ANATOMIA", Code = "TOPO", Nom = "Anatomie topographique" }
-                 );
+      public virtual DbSet<Service> Services { get; set; }
+      public virtual DbSet<Equipe> Equipes { get; set; }
+      public virtual DbSet<Metier> Metiers { get; set; }
+      public virtual DbSet<Personne> Personnes { get; set; }
 
-            modelBuilder.Entity<Version>().HasData(
-                 new Version
-                 {
-                     CodeLogiciel = "GENOMICA",
-                     Numero = 1f,
-                     Millesime = 2023,
-                     DateOuverture = new DateTime(2022, 1, 2),
-                     DateSortiePrevue = new DateTime(2023, 1, 8),
-                     DateSortieReelle = new DateTime(2023, 1, 20)
-                 },
-                 new Version
-                 {
-                     CodeLogiciel = "GENOMICA",
-                     Numero = 2f,
-                     Millesime = 2024,
-                     DateOuverture = new DateTime(2022, 12, 28),
-                     DateSortiePrevue = new DateTime(2024, 2, 28)
-                 },
-                 new Version
-                 {
-                     CodeLogiciel = "ANATOMIA",
-                     Numero = 4.5f,
-                     Millesime = 2022,
-                     DateOuverture = new DateTime(2021, 9, 1),
-                     DateSortiePrevue = new DateTime(2022, 7, 7),
-                     DateSortieReelle = new DateTime(2022, 7, 20)
-                 },
-                 new Version
-                 {
-                     CodeLogiciel = "ANATOMIA",
-                     Numero = 5f,
-                     Millesime = 2023,
-                     DateOuverture = new DateTime(2022, 8, 1),
-                     DateSortiePrevue = new DateTime(2023, 3, 30),
-                     DateSortieReelle = new DateTime(2023, 3, 25)
-                 },
-                 new Version
-                 {
-                     CodeLogiciel = "ANATOMIA",
-                     Numero = 5.5f,
-                     Millesime = 2024,
-                     DateOuverture = new DateTime(2023, 3, 30),
-                     DateSortiePrevue = new DateTime(2023, 11, 20)
-                 }
-            );
-        }
-    }
+
+      protected override void OnModelCreating(ModelBuilder modelBuilder)
+      {
+         #region Logiciels
+
+         modelBuilder.Entity<Filiere>(entity =>
+         {
+            entity.HasKey(e => e.Code);
+
+            entity.Property(e => e.Code).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.Nom).HasMaxLength(60);
+         });
+
+         modelBuilder.Entity<Logiciel>(entity =>
+         {
+            entity.HasKey(e => e.Code);
+
+            entity.Property(e => e.Code).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.CodeFiliere).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.Nom).HasMaxLength(60).IsUnicode(false);
+
+            entity.HasOne<Filiere>().WithMany().HasForeignKey(d => d.CodeFiliere)
+            .OnDelete(DeleteBehavior.NoAction);
+         });
+
+         modelBuilder.Entity<Module>(entity =>
+         {
+            entity.HasKey(e => new { e.Code, e.CodeLogiciel });
+
+            entity.Property(e => e.Code).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.CodeLogiciel).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.CodeLogicielParent).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.CodeModuleParent).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.Nom).HasMaxLength(60).IsUnicode(false);
+
+            entity.HasOne<Logiciel>().WithMany(l => l.Modules).HasForeignKey(d => d.CodeLogiciel)
+                            .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne<Module>().WithMany(m => m.SousModules)
+            .HasForeignKey(d => new { d.CodeModuleParent, d.CodeLogicielParent })
+            .OnDelete(DeleteBehavior.NoAction);
+         });
+
+         modelBuilder.Entity<Version>(entity =>
+         {
+            entity.HasKey(e => new { e.Numero, e.CodeLogiciel });
+
+            entity.Property(e => e.Numero);
+            entity.Property(e => e.CodeLogiciel).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.DateOuverture);
+            entity.Property(e => e.DateSortiePrevue);
+            entity.Property(e => e.DateSortieReelle);
+
+            entity.HasOne<Logiciel>().WithMany().HasForeignKey(d => d.CodeLogiciel)
+                            .OnDelete(DeleteBehavior.NoAction);
+         });
+
+         modelBuilder.Entity<Release>(entity =>
+         {
+            entity.HasKey(e => new { e.Numero, e.NumeroVersion, e.CodeLogiciel });
+
+            entity.Property(e => e.NumeroVersion);
+            entity.Property(e => e.CodeLogiciel).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.DatePubli);
+
+            entity.HasOne<Version>().WithMany(v => v.Releases)
+            .HasForeignKey(d => new { d.NumeroVersion, d.CodeLogiciel });
+
+         });
+
+         #endregion
+         //varchar : isunicode - nvarchar : rien du tout
+         #region Equipes
+         modelBuilder.Entity<Service>(entity =>
+         {
+            entity.HasKey(e => e.Code);
+
+            entity.Property(e => e.Code).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.Nom).HasMaxLength(60);
+
+         });
+
+         modelBuilder.Entity<Equipe>(entity =>
+         {
+            entity.HasKey(e => e.Code);
+
+            entity.Property(e => e.Code).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.Nom).HasMaxLength(60).IsUnicode(false);
+            entity.Property(e => e.CodeService).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.CodeFiliere).HasMaxLength(20).IsUnicode(false);
+
+            entity.HasOne<Filiere>().WithMany(f => f.Equipes)
+            .HasForeignKey(d => d.CodeFiliere)
+            .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne<Service>(s => s.Service).WithMany() // pour GETservice
+            .HasForeignKey(d => d.CodeService)
+            .OnDelete(DeleteBehavior.NoAction);
+         });
+
+         modelBuilder.Entity<Metier>(entity =>
+         {
+            entity.HasKey(e => e.Code);
+
+            entity.Property(e => e.Code).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.Titre).HasMaxLength(60).IsUnicode(false);
+            entity.Property(e => e.CodeService).HasMaxLength(20).IsUnicode(false);
+
+            entity.HasOne<Service>().WithMany()
+            .HasForeignKey(d => d.CodeService)
+            .OnDelete(DeleteBehavior.NoAction);
+         });
+
+         modelBuilder.Entity<Personne>(entity =>
+         {
+            entity.HasKey(e => e.Pseudo);
+
+            entity.Property(e => e.Pseudo).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.Nom).HasMaxLength(60).IsUnicode(false);
+            entity.Property(e => e.Prenom).HasMaxLength(60).IsUnicode(false);
+            entity.Property(e => e.TauxProductivite).HasColumnType("decimal(3,2)").HasDefaultValue(1m);
+            entity.Property(e => e.CodeEquipe).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.CodeMetier).HasMaxLength(20).IsUnicode(false);
+            entity.Property(e => e.Manager).HasMaxLength(20).IsUnicode(false);
+
+            entity.HasOne<Equipe>().WithMany(eq => eq.Personnes) // pour get personne pour recuperer l'equipe
+            .HasForeignKey(d => d.CodeEquipe)
+            .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne<Personne>().WithMany()
+            .HasForeignKey(d => d.Manager)
+            .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne<Metier>(p => p.Metier).WithMany() // pour get personne pour recuperer le metier
+            .HasForeignKey(d => d.CodeMetier)
+            .OnDelete(DeleteBehavior.NoAction);
+         });
+         #endregion
+
+
+         JeuDonnées.Créer(modelBuilder);
+
+
+      }
+
+   }
 }

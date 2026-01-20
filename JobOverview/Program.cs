@@ -1,5 +1,5 @@
 
-using JobOverview.Data;
+
 using JobOverview.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +22,8 @@ namespace JobOverview
             => opt.UseSqlServer(connect));
 
          builder.Services.AddScoped<IServiceLogiciels, ServiceLogiciels>();
+
+         builder.Services.AddScoped<IServiceEquipes, ServiceEquipes>();
 
             builder.Services.AddControllers();
          // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
