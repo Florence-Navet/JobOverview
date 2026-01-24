@@ -46,8 +46,10 @@ namespace JobOverview.Entities
             public DateTime DateSortiePrevue { get; set; }
             public DateTime? DateSortieReelle { get; set; }
 
-      //prop de navigation
-      public virtual List<Release> Releases { get; set; } = new();
+            public string? Notes { get; set; }
+
+        //prop de navigation
+        public virtual List<Release> Releases { get; set; } = new();
         }
 
         public class Release
@@ -56,5 +58,6 @@ namespace JobOverview.Entities
             public float NumeroVersion { get; set; }
             public string CodeLogiciel { get; set; } = "";
             public DateTime DatePubli { get; set; }
+            public string? Notes { get; set; }
         }
     }

@@ -13,6 +13,10 @@ namespace JobOverview.Services
 
       Task<List<Version>?> ObtenirVersionsLogiciel(string codeLogiciel, int? millesime);
 
+        Task<Release?> ObtenirReleasesLogiciel(string codeLogiciel, float numeroVersion, short numeroRelease);
+
+        Task<Release?> AjouterRelease(string codeLogiciel, float numeroVersion, Release release);
+
 
    }
    
@@ -80,5 +84,23 @@ namespace JobOverview.Services
 
        
       }
-   }
+
+
+        public async Task<Release?> ObtenirReleasesLogiciel(string codeLogiciel, float numeroVersion, short numeroRelease)
+        {
+
+            return await _contexte.Releases.FindAsync(numeroRelease, numeroVersion, codeLogiciel);
+        }
+
+        public async Task<Release?> AjouterRelease(string codeLogiciel, float numeroVersion, Release release)
+        {
+            release.CodeLogiciel = codeLogiciel;
+            release.NumeroVersion = numeroVersion;
+
+            _contexte.Releases.Add(release);
+            await _contexte.SaveChangesAsync();
+
+            return release;
+        }
+    }
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace JobOverview.Migrations
+namespace JobOverview.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
