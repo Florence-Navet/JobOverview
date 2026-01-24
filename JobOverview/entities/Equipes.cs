@@ -16,8 +16,10 @@
 
       //prop de navigation pour recuperer la liste d'une equipe GetEquipes (mettre aussi dans dbcontext)
       public virtual List<Personne> Personnes { get; set; } = new();
-      public virtual Service Service { get; set; } = null!; // pour recuperer le de GetPersonne
-   }
+      //public virtual Service Service { get; set; } = null!; // pour recuperer le de GetPersonne
+        public virtual Service Service { get; set; } = new(); // pour ne pas creer de nouveau service //on les remettre à null
+        // dans la methode de service
+    }
 
    public class Personne
    {
@@ -30,8 +32,10 @@
       public string? Manager { get; set; } 
 
       //prop de navigation
-      public virtual Metier Metier { get; set; } = null!; // pour recuperer les metier dans GEt personnne
-   }
+      //public virtual Metier Metier { get; set; } = null!; // pour recuperer les metier dans GEt personnne
+
+        public virtual Metier Metier { get; set; } = new(); // pour ne pas creer de nouveau metier 
+    }
 
   
 

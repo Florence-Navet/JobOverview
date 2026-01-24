@@ -91,6 +91,7 @@ namespace JobOverview.Controllers
 
             Release res = await _serviceLog.AjouterRelease(codeLogiciel, numeroVersion, rel);
 
+            //objet anonyme pour la route de la ressource créée
             object clé = new { codeLogiciel = res.CodeLogiciel, numeroVersion = res.NumeroVersion, numeroRelease = res.Numero };
             string uri = Url.Action(nameof(GetRelease), clé) ?? "";
             return Created(uri, res);

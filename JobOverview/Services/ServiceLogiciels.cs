@@ -15,7 +15,7 @@ namespace JobOverview.Services
 
         Task<Release?> ObtenirReleasesLogiciel(string codeLogiciel, float numeroVersion, short numeroRelease);
 
-        Task<Release?> AjouterRelease(string codeLogiciel, float numeroVersion, Release release);
+        Task<Release> AjouterRelease(string codeLogiciel, float numeroVersion, Release release);
 
 
    }
@@ -92,7 +92,7 @@ namespace JobOverview.Services
             return await _contexte.Releases.FindAsync(numeroRelease, numeroVersion, codeLogiciel);
         }
 
-        public async Task<Release?> AjouterRelease(string codeLogiciel, float numeroVersion, Release release)
+        public async Task<Release> AjouterRelease(string codeLogiciel, float numeroVersion, Release release)
         {
             release.CodeLogiciel = codeLogiciel;
             release.NumeroVersion = numeroVersion;
