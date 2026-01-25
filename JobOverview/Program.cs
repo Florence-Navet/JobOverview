@@ -19,7 +19,7 @@ namespace JobOverview
       
 
          builder.Services.AddDbContext<ContexteJobOverview>(opt 
-            => opt.UseSqlServer(connect));
+            => opt.UseSqlServer(connect).EnableSensitiveDataLogging());
 
          builder.Services.AddScoped<IServiceLogiciels, ServiceLogiciels>();
 
