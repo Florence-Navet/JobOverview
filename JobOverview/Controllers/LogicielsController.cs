@@ -48,6 +48,7 @@ namespace JobOverview.Controllers
             return logiciel;
         }
 
+
         // GET: Logiciels/GENOMICA/versions?millesime=2023
         [HttpGet("{codeLogiciel}/versions")]
         public async Task<ActionResult<IEnumerable<Version>>> GetVersions(string codeLogiciel, [FromQuery] int? millesime)
@@ -57,6 +58,23 @@ namespace JobOverview.Controllers
             if (versions == null) return NotFound();
 
             return Ok(versions);
+        }
+
+
+        //POST: api/Logiciels/GENOMICA
+        [HttpPost("{codeLogiciel}/versions")]
+        public async Task<ActionResult<Version>> PostVersions(string codeLogiciel, Version vers)
+        {
+            try
+            {
+                Version res = await _serviceLogi.AjouterVersion(codeLogiciel, vers);
+                return CreatedAtAction(nameof(GetVersions), new { codeLogiciel, res.Millesime }, res);
+            }
+            catch (Exception e)
+            {
+
+                return this.CustomResponseForError(e);
+            }
         }
 
         // GET : api/Logiciels/GENOMICA/Versions/1.00/Releases/30

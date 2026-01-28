@@ -17,6 +17,8 @@ namespace JobOverview.Services
 
         Task<Release> AjouterRelease(string codeLogiciel, float numeroVersion, Release release);
 
+        Task<Version> AjouterVersion(string codeLogiciel, Version version);
+
 
    }
    
@@ -84,6 +86,16 @@ namespace JobOverview.Services
 
        
       }
+
+        public async Task<Version> AjouterVersion(string codeLogiciel, Version version)
+        {
+            version.CodeLogiciel = codeLogiciel;
+
+            //Enregistrement en base
+            _contexte.Versions.Add(version);
+            await _contexte.SaveChangesAsync();
+            return version;
+        }
 
 
         public async Task<Release?> ObtenirReleasesLogiciel(string codeLogiciel, float numeroVersion, short numeroRelease)
