@@ -60,7 +60,12 @@ namespace JobOverview.Controllers
             return Ok(versions);
         }
 
-
+        /// <summary>
+        /// ajoute une version à un logiciel
+        /// </summary>
+        /// <param name="codeLogiciel"></param>
+        /// <param name="vers"></param>
+        /// <returns></returns>
         //POST: api/Logiciels/GENOMICA
         [HttpPost("{codeLogiciel}/versions")]
         public async Task<ActionResult<Version>> PostVersions(string codeLogiciel, Version vers)

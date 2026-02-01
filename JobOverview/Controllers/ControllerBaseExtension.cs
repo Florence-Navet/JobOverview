@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using JobOverview.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 
 namespace JobOverview.Controllers
@@ -18,6 +20,11 @@ namespace JobOverview.Controllers
             {
                 ProblemDetails pb = dbe.ConvertToProblemDetails();
                 return controller.Problem(pb.Detail, null, pb.Status, pb.Title);
+            }
+            else if ( e is ValidationRulesException vre)
+            {
+                ValidationProblemDetails vpd = new(vre.Errors);
+                return controller.ValidationProblem(vpd);
             }
             else throw e;
         }
@@ -37,6 +44,11 @@ namespace JobOverview.Controllers
                     JsonSerializer.Serialize(entity, new JsonSerializerOptions { WriteIndented = true }));
 
                 return controller.Problem(pb.Detail, null, pb.Status, pb.Title);
+            }
+            else if (e is ValidationRulesException vre)
+            {
+                ValidationProblemDetails vpd = new(vre.Errors);
+                return controller.ValidationProblem(vpd);
             }
             else throw e;
         }
