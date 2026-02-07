@@ -1,4 +1,6 @@
-﻿namespace JobOverview.entities
+﻿using JobOverview.Entities;
+
+namespace JobOverview.entities
 {
 
    public class Service
@@ -34,6 +36,8 @@
       //prop de navigation
       //public virtual Metier Metier { get; set; } = null!; // pour recuperer les metier dans GEt personnne
 
+        //prop de navigation pour reucperer la pers de pseudo donné avec son metier et ses activités
+        // api/Personnes/RBEAUMONT
         public virtual Metier Metier { get; set; } = new(); // pour ne pas creer de nouveau metier 
     }
 
@@ -45,5 +49,8 @@
       public string Titre { get; set; } = string.Empty;
 
       public string CodeService { get; set; } = string.Empty;
-   }
+
+        //prop de navigation pour recuperer la liste des metiers d'un service
+        public virtual List<Activite> Activites { get; set; } = new();
+    }
 }

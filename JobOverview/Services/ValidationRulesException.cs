@@ -6,7 +6,7 @@
         public ValidationRulesException()
         {
         }
-        public ValidationRulesException(string message)
+        public ValidationRulesException(string message, string v)
             : base(message)
         {
             

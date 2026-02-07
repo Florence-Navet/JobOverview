@@ -173,7 +173,7 @@ namespace JobOverview.Data
 				entity.Property(e => e.Code).HasMaxLength(20).IsUnicode(false);
 				entity.Property(e => e.Titre).HasMaxLength(60);
 
-				entity.HasMany<Metier>().WithMany().UsingEntity<ActiviteMetier>(
+				entity.HasMany<Metier>().WithMany(m => m.Activites).UsingEntity<ActiviteMetier>(
 					l => l.HasOne<Metier>().WithMany().HasForeignKey(am => am.CodeMetier),
 					r => r.HasOne<Activite>().WithMany().HasForeignKey(am => am.CodeActivite));
 			});
@@ -205,7 +205,7 @@ namespace JobOverview.Data
 				entity.Property(e => e.Heures).HasColumnType("decimal(3, 1)");
 				entity.Property(e => e.TauxProductivite).HasColumnType("decimal(3, 2)").HasDefaultValue(1m);
 
-				entity.HasOne<Tache>().WithMany().HasForeignKey(d => d.IdTache);
+				entity.HasOne<Tache>().WithMany(t => t.Travaux).HasForeignKey(d => d.IdTache);
 			});
 			#endregion
 

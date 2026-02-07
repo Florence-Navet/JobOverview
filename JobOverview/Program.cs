@@ -26,6 +26,8 @@ namespace JobOverview
 
          builder.Services.AddScoped<IServiceEquipes, ServiceEquipes>();
 
+            builder.Services.AddScoped<ServiceTaches, ServiceTaches>();
+
 
 
             builder.Services.AddControllers();

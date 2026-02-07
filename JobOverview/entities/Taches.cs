@@ -20,6 +20,11 @@ public class Tache
     public string CodeModule { get; set; } = "";
     public float NumVersion { get; set; }
     public string? Description { get; set; }
+
+    // tach + travaux associes api/taches/44
+    //propriété de navigation
+    public virtual List<Travail> Travaux { get; set; } = new();
+
 }
 
 public class Activite
