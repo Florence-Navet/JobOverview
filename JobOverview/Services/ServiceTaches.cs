@@ -61,7 +61,9 @@ namespace JobOverview.Services
             return pers;
         }
 
-        // Ajoute une tâche
+        // Ajoute une tâche 
+        // penser à mettre la prop de navigation
+        // à null pour éviter d'ajouter les travaux associés en même temps
         public async Task<Tache> AjouterTache(Tache tache)
         {
             tache.Travaux = null!;

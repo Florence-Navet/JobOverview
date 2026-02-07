@@ -16,9 +16,9 @@ namespace JobOverview.Controllers
     [ApiController]
     public class TachesController : ControllerBase
     {
-        private readonly ServiceTaches _serviceTaches;
+        private readonly IServiceTaches _serviceTaches;
 
-        public TachesController(ServiceTaches serviceTaches)
+        public TachesController(IServiceTaches serviceTaches)
         {
             _serviceTaches = serviceTaches;
         }
@@ -60,7 +60,7 @@ namespace JobOverview.Controllers
 
 
 
-        // POST: api/Taches
+        // POST: api/Taches // cree une tache
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Tache>> PostTache(Tache tache)
@@ -77,7 +77,7 @@ namespace JobOverview.Controllers
             }
         }
 
-        // POST: api/Taches/5/Travaux
+        // POST: api/Taches/5/Travaux // ajoute un travail à une tache donnée
         [HttpPost("{idTache}/Travaux")]
         public async Task<IActionResult> PostTravail([FromRoute] int idTache, Travail travail)
         {
