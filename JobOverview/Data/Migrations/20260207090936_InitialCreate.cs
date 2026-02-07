@@ -14,6 +14,18 @@ namespace JobOverview.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Activites",
+                columns: table => new
+                {
+                    Code = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
+                    Titre = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Activites", x => x.Code);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Filieres",
                 columns: table => new
                 {
@@ -131,7 +143,8 @@ namespace JobOverview.Data.Migrations
                     Millesime = table.Column<int>(type: "int", nullable: false),
                     DateOuverture = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateSortiePrevue = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateSortieReelle = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    DateSortieReelle = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -144,12 +157,36 @@ namespace JobOverview.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ActivitesMetiers",
+                columns: table => new
+                {
+                    CodeActivite = table.Column<string>(type: "varchar(20)", nullable: false),
+                    CodeMetier = table.Column<string>(type: "varchar(20)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ActivitesMetiers", x => new { x.CodeActivite, x.CodeMetier });
+                    table.ForeignKey(
+                        name: "FK_ActivitesMetiers_Activites_CodeActivite",
+                        column: x => x.CodeActivite,
+                        principalTable: "Activites",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ActivitesMetiers_Metiers_CodeMetier",
+                        column: x => x.CodeMetier,
+                        principalTable: "Metiers",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Personnes",
                 columns: table => new
                 {
                     Pseudo = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
-                    Nom = table.Column<string>(type: "varchar(60)", unicode: false, maxLength: 60, nullable: false),
-                    Prenom = table.Column<string>(type: "varchar(60)", unicode: false, maxLength: 60, nullable: false),
+                    Nom = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    Prenom = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     TauxProductivite = table.Column<decimal>(type: "decimal(3,2)", nullable: false, defaultValue: 1m),
                     CodeEquipe = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
                     CodeMetier = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
@@ -182,7 +219,8 @@ namespace JobOverview.Data.Migrations
                     Numero = table.Column<short>(type: "smallint", nullable: false),
                     NumeroVersion = table.Column<float>(type: "real", nullable: false),
                     CodeLogiciel = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
-                    DatePubli = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DatePubli = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -192,6 +230,67 @@ namespace JobOverview.Data.Migrations
                         columns: x => new { x.NumeroVersion, x.CodeLogiciel },
                         principalTable: "Versions",
                         principalColumns: new[] { "Numero", "CodeLogiciel" },
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Taches",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Titre = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    DureePrevue = table.Column<decimal>(type: "decimal(3,1)", nullable: false),
+                    DureeRestante = table.Column<decimal>(type: "decimal(3,1)", nullable: false),
+                    CodeActivite = table.Column<string>(type: "varchar(20)", nullable: false),
+                    Personne = table.Column<string>(type: "varchar(20)", nullable: false),
+                    CodeLogiciel = table.Column<string>(type: "varchar(20)", nullable: false),
+                    CodeModule = table.Column<string>(type: "varchar(20)", nullable: false),
+                    NumVersion = table.Column<float>(type: "real", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Taches", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Taches_Activites_CodeActivite",
+                        column: x => x.CodeActivite,
+                        principalTable: "Activites",
+                        principalColumn: "Code");
+                    table.ForeignKey(
+                        name: "FK_Taches_Modules_CodeModule_CodeLogiciel",
+                        columns: x => new { x.CodeModule, x.CodeLogiciel },
+                        principalTable: "Modules",
+                        principalColumns: new[] { "Code", "CodeLogiciel" });
+                    table.ForeignKey(
+                        name: "FK_Taches_Personnes_Personne",
+                        column: x => x.Personne,
+                        principalTable: "Personnes",
+                        principalColumn: "Pseudo");
+                    table.ForeignKey(
+                        name: "FK_Taches_Versions_NumVersion_CodeLogiciel",
+                        columns: x => new { x.NumVersion, x.CodeLogiciel },
+                        principalTable: "Versions",
+                        principalColumns: new[] { "Numero", "CodeLogiciel" });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Travaux",
+                columns: table => new
+                {
+                    DateTravail = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IdTache = table.Column<int>(type: "int", nullable: false),
+                    Heures = table.Column<decimal>(type: "decimal(3,1)", nullable: false),
+                    TauxProductivite = table.Column<decimal>(type: "decimal(3,2)", nullable: false, defaultValue: 1m)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Travaux", x => new { x.DateTravail, x.IdTache });
+                    table.ForeignKey(
+                        name: "FK_Travaux_Taches_IdTache",
+                        column: x => x.IdTache,
+                        principalTable: "Taches",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -233,14 +332,14 @@ namespace JobOverview.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Versions",
-                columns: new[] { "CodeLogiciel", "Numero", "DateOuverture", "DateSortiePrevue", "DateSortieReelle", "Millesime" },
+                columns: new[] { "CodeLogiciel", "Numero", "DateOuverture", "DateSortiePrevue", "DateSortieReelle", "Millesime", "Notes" },
                 values: new object[,]
                 {
-                    { "GENOMICA", 1f, new DateTime(2022, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2023 },
-                    { "GENOMICA", 2f, new DateTime(2022, 12, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2024, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 2024 },
-                    { "ANATOMIA", 4.5f, new DateTime(2021, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2022, 7, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2022, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2022 },
-                    { "ANATOMIA", 5f, new DateTime(2022, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 3, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 3, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), 2023 },
-                    { "ANATOMIA", 5.5f, new DateTime(2023, 3, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 2024 }
+                    { "GENOMICA", 1f, new DateTime(2022, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2023, null },
+                    { "GENOMICA", 2f, new DateTime(2022, 12, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2024, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 2024, null },
+                    { "ANATOMIA", 4.5f, new DateTime(2021, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2022, 7, 7, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2022, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), 2022, null },
+                    { "ANATOMIA", 5f, new DateTime(2022, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 3, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 3, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), 2023, null },
+                    { "ANATOMIA", 5.5f, new DateTime(2023, 3, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2023, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 2024, null }
                 });
 
             migrationBuilder.InsertData(
@@ -252,6 +351,11 @@ namespace JobOverview.Data.Migrations
                     { "MARQUAGE", "GENOMICA", "GENOMICA", "SEQUENCAGE", "Marquage" },
                     { "SEPARATION", "GENOMICA", "GENOMICA", "SEQUENCAGE", "Séparation" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ActivitesMetiers_CodeMetier",
+                table: "ActivitesMetiers",
+                column: "CodeMetier");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Equipes_CodeFiliere",
@@ -304,6 +408,31 @@ namespace JobOverview.Data.Migrations
                 columns: new[] { "NumeroVersion", "CodeLogiciel" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Taches_CodeActivite",
+                table: "Taches",
+                column: "CodeActivite");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taches_CodeModule_CodeLogiciel",
+                table: "Taches",
+                columns: new[] { "CodeModule", "CodeLogiciel" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taches_NumVersion_CodeLogiciel",
+                table: "Taches",
+                columns: new[] { "NumVersion", "CodeLogiciel" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Taches_Personne",
+                table: "Taches",
+                column: "Personne");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Travaux_IdTache",
+                table: "Travaux",
+                column: "IdTache");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Versions_CodeLogiciel",
                 table: "Versions",
                 column: "CodeLogiciel");
@@ -313,13 +442,28 @@ namespace JobOverview.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ActivitesMetiers");
+
+            migrationBuilder.DropTable(
+                name: "Releases");
+
+            migrationBuilder.DropTable(
+                name: "Travaux");
+
+            migrationBuilder.DropTable(
+                name: "Taches");
+
+            migrationBuilder.DropTable(
+                name: "Activites");
+
+            migrationBuilder.DropTable(
                 name: "Modules");
 
             migrationBuilder.DropTable(
                 name: "Personnes");
 
             migrationBuilder.DropTable(
-                name: "Releases");
+                name: "Versions");
 
             migrationBuilder.DropTable(
                 name: "Equipes");
@@ -328,13 +472,10 @@ namespace JobOverview.Data.Migrations
                 name: "Metiers");
 
             migrationBuilder.DropTable(
-                name: "Versions");
+                name: "Logiciels");
 
             migrationBuilder.DropTable(
                 name: "Services");
-
-            migrationBuilder.DropTable(
-                name: "Logiciels");
 
             migrationBuilder.DropTable(
                 name: "Filieres");

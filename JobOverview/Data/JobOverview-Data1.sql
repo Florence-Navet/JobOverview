@@ -1,4 +1,4 @@
--- Données déjà créées par le code
+﻿-- Données déjà créées par le code
 
 --print 'Table Filieres'
 --insert Filieres (Code, Nom) values

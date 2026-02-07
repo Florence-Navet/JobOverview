@@ -1,4 +1,5 @@
-﻿using JobOverview.entities;
+﻿using JobOverview.Data;
+using JobOverview.entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
