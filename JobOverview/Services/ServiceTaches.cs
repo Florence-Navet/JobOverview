@@ -12,6 +12,9 @@ namespace JobOverview.Services
         Task<Personne?> ObtenirPersonne(string peudo);
         Task<Tache> AjouterTache(Tache tache);
         Task<Travail> AjouterTravail(int idTache, Travail tache);
+        Task SupprimerTravail(int idTache, DateTime date);
+
+        Task<int> SupprimerTaches(string? personne, string? logiciel, float? version);
     }
 
     public class ServiceTaches : IServiceTaches
@@ -71,12 +74,12 @@ namespace JobOverview.Services
             //Récupère la personne et ses activités
             Personne? pers = await ObtenirPersonne(tache.Personne);
             if (pers == null)
-            
+
                 throw new ValidationRulesException("Personne", $"Persone {tache.Personne} non trouvée");
 
-                //Verifie si le code activité de la tache fait parte de ceux de la personne
-                if (pers.Metier.Activites.Find(a => a.Code == tache.CodeActivite) == null)
-                    throw new ValidationRulesException("CodeActivite", $"L'activité ne correspond pas au métier de la personne");
+            //Verifie si le code activité de la tache fait parte de ceux de la personne
+            if (pers.Metier.Activites.Find(a => a.Code == tache.CodeActivite) == null)
+                throw new ValidationRulesException("CodeActivite", $"L'activité ne correspond pas au métier de la personne");
 
 
             _contexte.Taches.Add(tache);
@@ -89,19 +92,19 @@ namespace JobOverview.Services
         public async Task<Travail> AjouterTravail(int idTache, Travail travail)
         {
             ValidationRulesException vre = new();
-            if(travail.DateTravail.TimeOfDay != new TimeSpan())
+            if (travail.DateTravail.TimeOfDay != new TimeSpan())
                 vre.Errors.Add("Date", new string[] { "La partie heure de la date doite être à 0" });
 
-            if(travail.Heures < 0.5m || travail.Heures > 8)
+            if (travail.Heures < 0.5m || travail.Heures > 8)
                 vre.Errors.Add("Heures", new string[] { "Le nombre d'heures doit être compris entre 0.5 et 8" });
 
-            if(vre.Errors.Any())
-                 throw vre;
+            if (vre.Errors.Any())
+                throw vre;
 
             //La tache doit exister en base 
             // on recupère la tache
             Tache? tache = await _contexte.Taches.FindAsync(idTache);
-            if(tache == null)
+            if (tache == null)
                 throw new ValidationRulesException("IdTache", $"Tache d'id {idTache} non trouvée");
 
             //remplacer le % de productivite reçu par celui de la pers concernée récupérée dans la table personne
@@ -123,5 +126,40 @@ namespace JobOverview.Services
 
             return travail;
         }
+
+        // supprimer un travail
+        public async Task SupprimerTravail(int idTache, DateTime date)
+        {
+            //recupere la tache et ses travaux associés
+            Tache? tache    = await ObtenirTache(idTache);
+            if (tache == null)
+                throw new ValidationRulesException("IdTache", $"Tache {idTache} non trouvée.");
+
+            //recherche le travail à supprimer
+            Travail? travail = tache.Travaux.Where(t => t.DateTravail == date).FirstOrDefault();
+            if (travail == null)
+                throw new ValidationRulesException("Date", $"Aucune travail à la date du {date} sur la tache {idTache}.");
+
+            //mis à jour duree travail restant sur la tache
+            tache.DureeRestante += travail.Heures;
+
+            //supprime le travail
+            _contexte.Remove(travail);
+
+            await _contexte.SaveChangesAsync();
+
+        }
+
+        //supprimer les taches correspondans au filtre
+        public async Task<int> SupprimerTaches(string? personne, string? logiciel, float? version)
+        {
+            var req = _contexte.Taches.Where(t =>
+            (personne == null || t.Personne == personne) &&
+            (logiciel == null || t.CodeLogiciel == logiciel) &&
+            (version == null ||  t.NumVersion == version));
+
+            return await req.ExecuteDeleteAsync();
+        }
     }
 }
+

@@ -16,7 +16,12 @@ namespace JobOverview.Controllers
         // Renvoie une réponse HTTP personnalisée pour les erreurs
         public static ActionResult CustomResponseForError(this ControllerBase controller, Exception e)
         {
-            if (e is DbUpdateException dbe)
+            if (e is DbUpdateConcurrencyException)
+            {
+                return controller.Problem("L'entité ou au moins une de ses entités filles n'exite pas en base",
+                    null, (int)HttpStatusCode.NotFound,"Aucune modification n'a été appliquée");
+            }
+            else if (e is DbUpdateException dbe)
             {
                 ProblemDetails pb = dbe.ConvertToProblemDetails();
                 return controller.Problem(pb.Detail, null, pb.Status, pb.Title);
