@@ -80,5 +80,21 @@ namespace JobOverview.Controllers
                 return this.CustomResponseForError(e, pers, _logger);
             }
         }
+
+        // PUT: api/Filieres/BIOV/Equipes/BOIV_MKT?manager=AFERRAND
+         [HttpPut("{codeEquipe}")]
+         public async Task<ActionResult> PutPersonne(String codeEquipe, [FromQuery] string manager)
+        {
+            try
+            {
+                int nbMaj = await _service.ChangerManagerEquipe(codeEquipe, manager);
+                return Ok(nbMaj + "personnes modifiées");
+            }
+            catch (Exception e)
+            {
+
+                return this.CustomResponseForError(e);
+            }
+        }
     }
 }
