@@ -46,7 +46,7 @@ public class TachesController : ControllerBase
     }
 
 
-    // GET: api/Personnes/
+    // GET: api/Personnes/RBREAUMONT
     [HttpGet("/api/Personnes/{pseudo}")]
     public async Task<ActionResult<Personne>> GetPersonne(string pseudo)
     {
@@ -57,7 +57,27 @@ public class TachesController : ControllerBase
         return Ok(pers);
     }
 
+    // PUT : api/Taches
+    [HttpPut]
+    public async Task<ActionResult<Tache>> PutTache(Tache tache)
+    {
+        try
+        {
+            //modifie la tache si elle exite ou bien la crée
+            // et récupère avec son Id généré automatiquement
+            Tache res = await _serviceTaches.ModifierAjouterTache(tache);
 
+            //renvoie la réponse appropriée selon que la tache a été modifiée ou maj
+            if (tache.Id == 0) // tache créee
+                return CreatedAtAction(nameof(GetTache), new { res.Id }, res);
+            else
+                return Ok(res);
+        }
+        catch (Exception e)
+        {
+            return this.CustomResponseForError(e);
+        }
+    }
 
 
     // POST: api/Taches // cree une tache

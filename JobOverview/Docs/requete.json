@@ -1,0 +1,33 @@
+﻿{
+  "code": "BIOV_MKT",
+  "nom": "Marketing Biologie végétale",
+  "codeService": "MKT",
+  "codeFiliere": "BIOV",
+  "personnes": [
+    {
+      "pseudo": "PROI",
+      "nom": "Roi",
+      "prenom": "Patrick",
+      "codeEquipe": "BIOV_MKT",
+      "codeMetier": "CDP",
+      "manager": null
+    },
+    {
+      "pseudo": "EDUPONT",
+      "nom": "DUPONT",
+      "prenom": "Eric",
+      "codeEquipe": "BIOV_MKT",
+      "codeMetier": "ANA",
+      "manager": "PROI"
+    },
+    {
+      "pseudo": "EDURAND",
+      "nom": "DURAND",
+      "prenom": "Erika",
+      "tauxProductivite": 0.50,
+      "codeEquipe": "BIOV_MKT",
+      "codeMetier": "DES",
+      "manager": "PROI"
+    }
+  ]
+}

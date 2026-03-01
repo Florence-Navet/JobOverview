@@ -15,6 +15,8 @@ namespace JobOverview.Services
         Task SupprimerTravail(int idTache, DateTime date);
 
         Task<int> SupprimerTaches(string? personne, string? logiciel, float? version);
+
+        Task<Tache> ModifierAjouterTache(Tache tache);
     }
 
     public class ServiceTaches : IServiceTaches
@@ -67,6 +69,26 @@ namespace JobOverview.Services
         // Ajoute une tâche 
         // penser à mettre la prop de navigation
         // à null pour éviter d'ajouter les travaux associés en même temps
+
+        //Modifie une tâche ou l'ajoute si elle n'existe pas
+        public async Task<Tache> ModifierAjouterTache(Tache tache)
+        {
+            tache.Travaux = null!;
+
+            //recupère la personne et ses activités
+            Personne? pers = await ObtenirPersonne(tache.Personne);
+            if (pers == null)
+                throw new ValidationRulesException("Persone", $"Personne {tache.Personne} non trouvée");
+
+            //Verifie si le code activité de la tache fait partie de ceux de la personne
+            if (pers.Metier.Activites.Find(a => a.Code == tache.CodeActivite) == null)
+                throw new ValidationRulesException("CodeActivite", $"L'activité ne corresponas au métier de la personne");
+
+            _contexte.Taches.Update(tache);
+            await _contexte.SaveChangesAsync();
+
+            return tache;
+        }
         public async Task<Tache> AjouterTache(Tache tache)
         {
             tache.Travaux = null!;

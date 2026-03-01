@@ -11,6 +11,8 @@ namespace JobOverview.Services
         Task<Equipe?> ObtenirEquipe(string codeFilière, string codeEquipe);
         Task<Equipe> AjouterEquipe(string codeFilière, Equipe équipe);
         Task<Personne> AjouterPersonne(string codeEquipe, Personne personne);
+
+        Task<int> ChangerManagerEquipe(string equipe, string manager);
     }
 
     public class ServiceEquipes : IServiceEquipes
@@ -72,6 +74,27 @@ namespace JobOverview.Services
             await _contexte.SaveChangesAsync();
 
             return personne;
+        }
+
+        //Changer le manager d'une équipe
+        public async Task<int> ChangerManagerEquipe(string equipe, string manager)
+        {
+            using (var transaction = _contexte.Database.BeginTransaction())
+            {
+                //modifie le manager de toutes les personnes de l'équipe
+                int nbModifs = await _contexte.Personnes
+                    .Where(p => p.CodeEquipe == equipe)
+                    .ExecuteUpdateAsync(setter => setter.SetProperty(p => p.Manager, manager));
+
+                //remet à null le champ manager pour le manger lui-meme
+                await _contexte.Personnes
+                    .Where(p => p.Pseudo == manager)
+                    .ExecuteUpdateAsync(setter => setter.SetProperty(p => p.Manager, (string?)null));
+
+                transaction.Commit();
+                return nbModifs;
+
+            }
         }
     }
 }
